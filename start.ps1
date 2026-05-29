@@ -12,6 +12,14 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+trap {
+    Write-Host ""
+    Write-Host "X   UNEXPECTED ERROR: $_" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Press any key to close..." -ForegroundColor Yellow
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    exit 1
+}
 
 $ROOT     = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BACKEND  = Join-Path $ROOT "backend"
@@ -20,7 +28,15 @@ $FRONTEND = Join-Path $ROOT "frontend"
 
 function ok   { param($msg) Write-Host "OK  $msg" -ForegroundColor Green }
 function info { param($msg) Write-Host "->  $msg" -ForegroundColor Yellow }
-function err  { param($msg) Write-Host "X   $msg" -ForegroundColor Red; exit 1 }
+function err  {
+    param($msg)
+    Write-Host ""
+    Write-Host "X   ERROR: $msg" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Press any key to close..." -ForegroundColor Yellow
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    exit 1
+}
 
 Write-Host ""
 Write-Host "  =====================================================" -ForegroundColor Cyan
