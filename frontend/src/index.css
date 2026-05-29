@@ -1,60 +1,396 @@
 @import "tailwindcss";
 
+/* ── Design tokens (OKLCH warm organic palette) ─────────────────────────────── */
 @theme {
-  /* Couleurs primaires — violet */
-  --color-primary-50:  #EEEDFE;
-  --color-primary-100: #CECBF6;
-  --color-primary-200: #AFA9EC;
-  --color-primary-500: #7F77DD;
-  --color-primary-700: #3C3489;
-  --color-primary-900: #26215C;
+  /* Surfaces */
+  --color-bg:              oklch(96.5% 0.008 80);
+  --color-bg-deep:         oklch(94%   0.012 80);
+  --color-surface:         oklch(98.5% 0.006 80);
+  --color-surface-2:       oklch(95%   0.010 80);
+  --color-hairline:        oklch(88%   0.012 80);
+  --color-hairline-strong: oklch(82%   0.015 80);
 
-  /* Succès — vert */
-  --color-success-50:  #E1F5EE;
-  --color-success-500: #1D9E75;
-  --color-success-700: #085041;
+  /* Text */
+  --color-fg:   oklch(20% 0.012 60);
+  --color-fg-2: oklch(36% 0.012 60);
+  --color-fg-3: oklch(55% 0.010 60);
+  --color-fg-4: oklch(70% 0.008 60);
 
-  /* Warning — orange */
-  --color-warning-50:  #FAEEDA;
-  --color-warning-500: #BA7517;
-  --color-warning-700: #633806;
+  /* Neutrals (warm) */
+  --color-neutral-50:  oklch(96.5% 0.008 80);
+  --color-neutral-100: oklch(94%   0.012 80);
+  --color-neutral-200: oklch(88%   0.012 80);
+  --color-neutral-300: oklch(80%   0.012 80);
+  --color-neutral-400: oklch(70%   0.008 60);
+  --color-neutral-500: oklch(55%   0.010 60);
+  --color-neutral-700: oklch(36%   0.012 60);
+  --color-neutral-900: oklch(20%   0.012 60);
 
-  /* Danger — rouge */
-  --color-danger-50:   #FCEBEB;
-  --color-danger-500:  #E24B4A;
-  --color-danger-700:  #791F1F;
+  /* Primary / accent (violet) */
+  --color-primary-50:  oklch(96%  0.030 280);
+  --color-primary-100: oklch(92%  0.050 280);
+  --color-primary-500: oklch(52%  0.140 280);
+  --color-primary-700: oklch(40%  0.140 280);
+  --color-primary-900: oklch(26%  0.120 280);
 
-  /* Info — bleu */
-  --color-info-50:  #E6F1FB;
-  --color-info-500: #378ADD;
-  --color-info-700: #0C447C;
+  /* Success */
+  --color-success-50:  oklch(95%  0.04  155);
+  --color-success-100: oklch(91%  0.06  155);
+  --color-success-500: oklch(58%  0.12  155);
+  --color-success-700: oklch(42%  0.10  155);
 
-  /* Neutres */
-  --color-neutral-50:  #F5F4F0;
-  --color-neutral-100: #F1EFE8;
-  --color-neutral-200: #D3D1C7;
-  --color-neutral-400: #B4B2A9;
-  --color-neutral-500: #888780;
-  --color-neutral-700: #5F5E5A;
-  --color-neutral-900: #2c2c2a;
+  /* Warning */
+  --color-warning-50:  oklch(95%  0.05  65);
+  --color-warning-500: oklch(62%  0.13  60);
+  --color-warning-700: oklch(46%  0.12  55);
+
+  /* Danger */
+  --color-danger-50:  oklch(95%  0.04  20);
+  --color-danger-500: oklch(58%  0.15  20);
+  --color-danger-700: oklch(42%  0.13  20);
+
+  /* Info */
+  --color-info-50:  oklch(95%  0.04  240);
+  --color-info-500: oklch(58%  0.12  240);
+  --color-info-700: oklch(42%  0.12  240);
 
   /* Score buckets */
-  --color-score-critical-bg:   #FCEBEB;
-  --color-score-critical-text: #791F1F;
-  --color-score-weak-bg:       #FAEEDA;
-  --color-score-weak-text:     #633806;
-  --color-score-moderate-bg:   #E6F1FB;
-  --color-score-moderate-text: #0C447C;
-  --color-score-good-bg:       #E1F5EE;
-  --color-score-good-text:     #085041;
+  --color-score-critical-bg:   oklch(95%  0.04  20);
+  --color-score-critical-text: oklch(38%  0.13  20);
+  --color-score-weak-bg:       oklch(95%  0.05  65);
+  --color-score-weak-text:     oklch(42%  0.12  55);
+  --color-score-moderate-bg:   oklch(95%  0.04  240);
+  --color-score-moderate-text: oklch(38%  0.12  240);
+  --color-score-good-bg:       oklch(95%  0.04  155);
+  --color-score-good-text:     oklch(38%  0.10  155);
 
-  --font-sans: system-ui, -apple-system, sans-serif;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
+  /* Typography */
+  --font-sans:  'Geist', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 0 0 oklch(80% 0.015 80 / 0.5);
+  --shadow-2: 0 1px 2px oklch(40% 0.02 60 / 0.04), 0 8px 24px oklch(40% 0.02 60 / 0.06);
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; background: #F5F4F0; font-family: var(--font-sans); color: #2c2c2a; }
+/* ── Base reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: oklch(96.5% 0.008 80);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: oklch(20% 0.012 60);
+  -webkit-font-smoothing: antialiased;
+}
+
 button, input, textarea, select { font-family: inherit; }
+::selection { background: oklch(96% 0.03 280); }
+
+/* ── Paper grain texture ────────────────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+/* ── App shell layout ───────────────────────────────────────────────────────── */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 228px;
+  flex-shrink: 0;
+  background: oklch(94% 0.012 80);
+  border-right: 1px solid oklch(88% 0.012 80);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 20px 0 16px;
+}
+
+.sidebar-wordmark {
+  padding: 0 18px 18px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid oklch(88% 0.012 80);
+}
+
+.sidebar-logo {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  line-height: 1;
+  color: oklch(20% 0.012 60);
+  letter-spacing: -0.02em;
+}
+
+.sidebar-logo .slash { color: oklch(52% 0.14 280); }
+
+.sidebar-tag {
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: oklch(60% 0.010 60);
+}
+
+.sidebar-tag em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 10px 10px;
+}
+
+.sidebar-section {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: oklch(68% 0.008 60);
+  padding: 12px 8px 4px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: oklch(36% 0.012 60);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 120ms, color 120ms;
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.sidebar-link:hover {
+  background: oklch(91% 0.010 80);
+  color: oklch(20% 0.012 60);
+}
+
+.sidebar-link.active {
+  background: oklch(98.5% 0.006 80);
+  color: oklch(20% 0.012 60);
+  font-weight: 500;
+  border-color: oklch(88% 0.012 80);
+  box-shadow: var(--shadow-1);
+}
+
+.sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  background: oklch(52% 0.14 280);
+  border-radius: 0 2px 2px 0;
+}
+
+.sidebar-link svg { opacity: 0.65; }
+.sidebar-link.active svg { opacity: 1; color: oklch(52% 0.14 280); }
+
+.sidebar-footer {
+  padding: 12px 10px 0;
+  border-top: 1px solid oklch(88% 0.012 80);
+}
+
+.lang-toggle {
+  display: flex;
+  gap: 3px;
+}
+
+.lang-btn {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid oklch(85% 0.012 80);
+  background: transparent;
+  color: oklch(60% 0.010 60);
+  cursor: pointer;
+  transition: all 120ms;
+}
+
+.lang-btn.active {
+  background: oklch(98.5% 0.006 80);
+  border-color: oklch(52% 0.14 280 / 0.45);
+  color: oklch(40% 0.14 280);
+  font-weight: 500;
+}
+
+/* ── Main area ──────────────────────────────────────────────────────────────── */
+.main-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Topbar ─────────────────────────────────────────────────────────────────── */
+.topbar {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 36px;
+  gap: 12px;
+  border-bottom: 1px solid oklch(88% 0.012 80);
+  background: oklch(96.5% 0.008 80 / 0.88);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.topbar-crumb {
+  font-size: 12.5px;
+  color: oklch(55% 0.010 60);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.topbar-crumb strong {
+  font-weight: 500;
+  color: oklch(20% 0.012 60);
+}
+
+.topbar-crumb .sep { color: oklch(72% 0.008 60); font-size: 11px; }
+
+/* ── Main content ───────────────────────────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  padding: 32px 36px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* ── Workflow step strip ────────────────────────────────────────────────────── */
+.workflow-strip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.wf-connector {
+  width: 14px;
+  height: 1px;
+  flex-shrink: 0;
+  background: oklch(85% 0.012 80);
+}
+
+.wf-connector.done { background: oklch(68% 0.07 155); }
+
+.wf-step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 120ms;
+  background: none;
+}
+
+.wf-step.done {
+  color: oklch(42% 0.10 155);
+  border-color: oklch(75% 0.06 155);
+  background: oklch(95% 0.04 155);
+}
+
+.wf-step.current {
+  color: oklch(40% 0.14 280);
+  border-color: oklch(52% 0.14 280);
+  background: oklch(96% 0.03 280);
+  font-weight: 500;
+}
+
+.wf-step.next {
+  color: oklch(36% 0.012 60);
+  border-color: oklch(82% 0.015 80);
+  background: oklch(98.5% 0.006 80);
+}
+
+.wf-step.next:hover {
+  border-color: oklch(52% 0.14 280 / 0.5);
+  color: oklch(40% 0.14 280);
+}
+
+.wf-step.locked {
+  color: oklch(72% 0.008 60);
+  border-color: oklch(90% 0.010 80);
+  cursor: not-allowed;
+}
+
+.wf-step.future {
+  color: oklch(62% 0.010 60);
+  border-color: oklch(88% 0.012 80);
+}
+
+.wf-step.future:hover { background: oklch(94% 0.010 80); }
+
+/* ── Typography helpers ─────────────────────────────────────────────────────── */
+.serif { font-family: var(--font-serif); }
+.mono  { font-family: var(--font-mono); }
+
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: oklch(20% 0.012 60);
+  margin: 0;
+}
+
+.stat-num {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: oklch(60% 0.010 60);
+}

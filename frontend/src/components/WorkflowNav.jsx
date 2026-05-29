@@ -28,10 +28,8 @@ export default function WorkflowNav({ current }) {
       const progress = progressRes.status === 'fulfilled' ? progressRes.value : null
       const plan     = planRes.status     === 'fulfilled' ? planRes.value     : []
       if (!progress) return
-
       const interviewDone = progress.mandatory_unanswered === 0 && progress.global.total > 0
       const planCount     = plan.filter(i => i.status !== 'excluded').length
-
       setLocks({
         interview:        false,
         synthesis:        !interviewDone,
@@ -47,33 +45,34 @@ export default function WorkflowNav({ current }) {
   const currentIdx = STEPS.findIndex(s => s.key === current)
 
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="workflow-strip">
       {STEPS.map((step, i) => {
         const isDone    = i < currentIdx
         const isCurrent = i === currentIdx
         const isNext    = i === currentIdx + 1
         const isLocked  = !!locks[step.key]
 
+        let cls = 'wf-step '
+        if (isLocked)       cls += 'locked'
+        else if (isCurrent) cls += 'current'
+        else if (isDone)    cls += 'done'
+        else if (isNext)    cls += 'next'
+        else                cls += 'future'
+
         return (
-          <div key={step.key} className="flex items-center">
-            {i > 0 && (
-              <div className={`w-4 h-px flex-shrink-0 ${isDone && !isLocked ? 'bg-primary-500' : 'bg-neutral-200'}`} />
-            )}
+          <div key={step.key} style={{ display: 'flex', alignItems: 'center' }}>
+            {i > 0 && <div className={`wf-connector ${isDone && !isLocked ? 'done' : ''}`} />}
             <button
+              className={cls}
               onClick={() => !isLocked && navigate(step.path(id))}
               title={isLocked ? t('lock_tooltip') : step.label}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] border transition-all
-                ${isLocked
-                  ? 'bg-neutral-50 border-neutral-200 text-neutral-300 cursor-not-allowed'
-                  : isCurrent
-                  ? 'bg-primary-50 border-primary-500 text-primary-700 font-semibold cursor-pointer'
-                  : isDone
-                  ? 'bg-white border-success-500 text-success-700 hover:bg-success-50 cursor-pointer'
-                  : isNext
-                  ? 'bg-white border-neutral-300 text-neutral-600 hover:border-primary-400 hover:text-primary-700 cursor-pointer'
-                  : 'bg-white border-neutral-200 text-neutral-400 hover:border-neutral-300 cursor-pointer'}`}>
-              {isDone && !isLocked && <span className="text-[9px]">✓</span>}
-              {isLocked && <span className="text-[9px]">○</span>}
+            >
+              {isDone && !isLocked && (
+                <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <polyline points="1.5,6 4.5,9 10.5,3"/>
+                </svg>
+              )}
+              {isLocked && <span style={{ fontSize: 9, opacity: 0.5 }}>○</span>}
               {step.label}
             </button>
           </div>
