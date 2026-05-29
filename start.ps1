@@ -129,9 +129,7 @@ $needsInstall = (-not (Test-Path $installedMarker)) -or
 
 if ($needsInstall) {
     info "Installing Python dependencies..."
-    & pip install --upgrade pip
-    if ($LASTEXITCODE -ne 0) { err "pip upgrade failed" }
-    & pip install -r $requirementsTxt
+    & python -m pip install -r $requirementsTxt
     if ($LASTEXITCODE -ne 0) { err "pip install failed - check the error above" }
     New-Item -ItemType File -Force -Path $installedMarker | Out-Null
     ok "Python dependencies installed"
