@@ -1,0 +1,89 @@
+{
+  "nav": { "campaigns": "Campaigns", "catalogue": "Project Catalogue", "framework": "Framework" },
+  "workflow": { "interview": "Interview", "synthesis": "Synthesis", "projects": "Projects", "qualification": "Qualification", "roadmap": "Roadmap", "planning": "Planning", "sheets": "Sheets" },
+  "common": { "loading": "Loading…", "error": "Error", "cancel": "Cancel", "save": "Save", "saving": "Saving…", "saved": "✓ Saved", "unsaved": "● Unsaved", "close": "Close", "previous": "← Previous", "next": "Next →", "generate_ai": "✦ Generate with AI", "generating": "⟳ Generating…", "export_pdf": "Export PDF" },
+  "status": { "DRAFT": "Draft", "IN_PROGRESS": "In progress", "COMPLETED": "Completed", "ARCHIVED": "Archived" },
+  "phase": { "quick_win": "Quick wins", "court": "Short term", "moyen": "Medium term", "long": "Long term" },
+  "effort_impact": { "faible": "Low", "moyen": "Medium", "fort": "High" },
+  "score": { "critical": "Critical", "weak": "Weak", "moderate": "Moderate", "good": "Good" },
+  "campaigns": {
+    "title": "Campaigns", "new": "+ New campaign", "empty": "No campaigns",
+    "empty_hint": "Create your first campaign to get started",
+    "continue_interview": "Continue interview", "synthesis": "Synthesis", "plan": "Plan →",
+    "completion": "Completion", "criteria": "criteria", "to_review": "To review",
+    "flagged_criteria": "flagged criteria", "domains": "Domains", "in_scope": "in scope",
+    "global_progress": "Overall progress", "by_domain": "By domain", "flagged": "flagged"
+  },
+  "campaign_new": {
+    "title": "New campaign", "supplier": "Supplier", "existing": "Existing", "new_supplier": "New",
+    "supplier_name": "Supplier name", "sector": "Sector (optional)", "select": "— Select —",
+    "campaign_title": "Campaign title", "title_placeholder": "E.g.: Maturity audit May 2026",
+    "consultant": "Consultant (optional)", "consultant_placeholder": "First Last",
+    "domains_to_audit": "Domains to audit", "create": "Create and start", "creating": "Creating…",
+    "supplier_required": "Supplier name is required", "select_supplier": "Select or create a supplier",
+    "title_required": "Title is required", "domains_required": "Select at least one domain"
+  },
+  "interview": {
+    "questions": "Questions", "criteria_to_assess": "Criteria to assess",
+    "comment_placeholder": "Comment, field observation…",
+    "to_review": "⚐ To review", "flagged": "⚑ Flagged",
+    "question_score": "Question score", "complete": "✓ Complete",
+    "view_synthesis": "View synthesis →", "attachment": "+ Attachment"
+  },
+  "synthesis": {
+    "title": "Assessment synthesis —", "completed": "complete", "flagged": "flagged",
+    "general_observations": "General observations", "global_maturity": "Global maturity",
+    "domain_view": "Domain view", "detailed_maturity": "Detailed maturity",
+    "subdomain_view": "Subdomain view", "consultant_notes": "Consultant notes",
+    "notes_placeholder": "General observations, context, key interview highlights…",
+    "weak_points_title": "Details by subdomain — main weak points",
+    "weak_points_hint": "2 weakest criteria (score ≤ 2) + flagged criteria by subdomain",
+    "completion": "Completion", "assessed_criteria": "Assessed criteria", "audited_domains": "Audited domains",
+    "in_scope": "in scope", "no_weak_points": "No weak points identified", "not_assessed": "Not assessed",
+    "projects_btn": "Projects →", "validate_btn": "Validate synthesis and proceed to projects →"
+  },
+  "plan_selection": {
+    "breadcrumb": "Synthesis", "title": "Project selection",
+    "subtitle": "Set targets and select projects by subdomain",
+    "qualify_btn": "Qualify →", "subdomains": "Subdomains", "click_set_target": "Click · Set the target",
+    "manual": "+ Manual", "target": "Target", "maturity_projection": "Maturity projection",
+    "delta_per_domain": "Δ per domain", "insufficient_maturity": "⚠ Insufficient prior maturity",
+    "current_score": "Current score:", "compatible": "compatible", "no_projects": "No projects in catalogue for this subdomain",
+    "select_subdomain": "Select a subdomain", "selected": "selected",
+    "validate_btn": "Validate and qualify →", "new_project": "New project",
+    "label": "Label *", "description": "Description", "main_subdomain": "Main subdomain",
+    "target_maturity": "Expected target maturity", "create_add": "Create and add"
+  },
+  "plan_qualification": {
+    "breadcrumb": "Selection", "title": "Project qualification",
+    "subtitle": "Adjust effort, impact and rephrase projects for the client",
+    "roadmap_btn": "Roadmap →", "to_qualify": "to qualify",
+    "return_selection": "return to selection", "rephrase": "Rephrase",
+    "client_label": "Client label", "client_description": "Client description",
+    "apply": "Apply changes", "excluded": "Excluded projects", "restore": "restore"
+  },
+  "roadmap": { "export_pdf": "Export PDF" },
+  "gantt": {
+    "title": "Project planning", "scheduled": "scheduled projects",
+    "project": "Project", "start": "Start", "duration": "Duration", "clear": "Clear",
+    "hint": "Hover over a project to edit planning · Phases adjust with buttons",
+    "validate_btn": "Validate and write sheets →", "sheets_btn": "Sheets →"
+  },
+  "sheets": {
+    "breadcrumb": "Planning", "title": "Project Sheets",
+    "generate_empty": "✦ Generate {n} empty sheets",
+    "empty_sheet": "Empty sheet", "unsaved": "● Unsaved",
+    "objectives": "Objectives", "key_actions": "Key actions", "stakeholders": "Stakeholders",
+    "prerequisites": "Prerequisites", "deliverables": "Expected deliverables", "kpis": "Success KPIs",
+    "duration": "Indicative duration",
+    "action_placeholder": "Add an action…", "stakeholder_placeholder": "E.g.: Supply chain director…",
+    "prereq_placeholder": "Necessary conditions before launching the project…",
+    "deliverable_placeholder": "E.g.: Documented S&OP procedure…",
+    "kpi_placeholder": "E.g.: Service rate ≥ 95%…", "duration_placeholder": "E.g.: 3-6 months",
+    "save_btn": "✓ Save", "save_sheet_btn": "✓ Save sheet",
+    "no_projects": "No projects", "return_selection": "return to selection",
+    "sheets_pdf": "Sheets PDF", "full_export": "Full export", "actions_xls": "Action plan XLS",
+    "phase_quick_win": "Quick win", "phase_court": "Short term", "phase_moyen": "Medium term", "phase_long": "Long term"
+  },
+  "lock_tooltip": "Complete the previous step to continue"
+}

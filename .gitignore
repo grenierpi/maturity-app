@@ -1,0 +1,30 @@
+# Python
+backend/venv/
+**/__pycache__/
+*.py[cod]
+
+# Base de données et uploads
+backend/maturity.db
+backend/uploads/
+
+# Variables d'environnement (contient la clé API)
+backend/.env
+
+# Logs
+backend.log
+frontend.log
+*.log
+
+# Node
+frontend/node_modules/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Marker d'installation
+backend/venv/.installed
+
+# IDE
+.vscode/
+.idea/

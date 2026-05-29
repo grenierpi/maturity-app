@@ -1,0 +1,28 @@
+{
+  "domains": {
+    "ORG":  "Organisation & Gestion des ressources",
+    "PLAN": "Planification & Logistique",
+    "SIM":  "Management industriel fournisseur",
+    "IQ":   "Industrialisation & Qualité",
+    "ME":   "Excellence opérationnelle"
+  },
+  "subdomains": {
+    "ORG_GOV":  "Gouvernance de l'entreprise",
+    "ORG_CAP":  "Gestion de la charge & capacité",
+    "PLAN_SC":  "Architecture Supply Chain",
+    "PLAN_INV": "Politique & Gestion des stocks",
+    "PLAN_SOP": "S&OP (Sales & Operations Planning)",
+    "PLAN_MPS": "Programme Directeur de Production",
+    "PLAN_MRP": "MRP & Planification détaillée",
+    "PLAN_PROC":"Approvisionnement",
+    "SIM_PERF": "Sélection & Performance fournisseur",
+    "SIM_RISK": "Gestion des risques fournisseur",
+    "IQ_NC":    "Gestion NC & Protection client",
+    "IQ_CHANGE":"Gestion des évolutions industrielles",
+    "IQ_PRES":  "Préservation produit & FOD",
+    "ME_FLOW":  "Flux physiques & implantation",
+    "ME_STD":   "Standards & Instructions de travail",
+    "ME_KPI":   "KPI & Pilotage de la performance",
+    "ME_EQP":   "Gestion des équipements & TPM"
+  }
+}

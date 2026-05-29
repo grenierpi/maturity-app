@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 2.2cm 2cm 1.8cm 2cm; }
+  body { font-family: Arial, sans-serif; font-size: 10pt; color: #1A1928; line-height: 1.4; margin: 0; }
+  /* Document header */
+  .doc-header { display: table; width: 100%; border-bottom: 2pt solid #0070AD; padding-bottom: 8pt; margin-bottom: 10pt; }
+  .doc-header-logo { display: table-cell; vertical-align: middle; width: 180pt; }
+  .doc-header-title { display: table-cell; vertical-align: middle; text-align: right; font-size: 9pt; font-variant: small-caps; letter-spacing: 0.5pt; color: #6B6A7B; }
+  /* Page break */
+  .page-break { page-break-before: always; }
+  /* Chantier sheet */
+  .fiche { margin-bottom: 0; }
+  /* Fiche header */
+  .fiche-header { padding: 10pt 12pt 8pt; border-radius: 4pt 4pt 0 0; }
+  .fiche-header-table { width: 100%; border-collapse: collapse; }
+  .fiche-header-table td { padding: 0; vertical-align: top; }
+  .fiche-num { display: inline-block; width: 22pt; height: 22pt; border-radius: 50%; background: rgba(255,255,255,0.25); color: #fff; font-size: 10pt; font-weight: bold; text-align: center; line-height: 22pt; margin-right: 6pt; vertical-align: middle; }
+  .fiche-label { font-size: 13pt; font-weight: bold; color: #fff; vertical-align: middle; }
+  .fiche-meta { margin-top: 5pt; }
+  .fiche-badge { display: inline-block; padding: 2pt 7pt; border-radius: 10pt; font-size: 8pt; font-weight: bold; background: rgba(255,255,255,0.2); color: #fff; margin-right: 4pt; }
+  .fiche-right { text-align: right; }
+  .fiche-effort-label { font-size: 8pt; color: rgba(255,255,255,0.7); display: block; }
+  .fiche-effort-val { font-size: 9pt; font-weight: bold; color: #fff; }
+  /* Fiche body */
+  .fiche-body { border: 1pt solid #D0DEEE; border-top: none; border-radius: 0 0 4pt 4pt; padding: 0; }
+  /* Grid sections — table layout for wkhtmltopdf */
+  .sections-table { width: 100%; border-collapse: collapse; }
+  .sections-table td { vertical-align: top; padding: 8pt 10pt; border: 0.5pt solid #D0DEEE; }
+  .section-full { width: 100%; }
+  .section-half { width: 50%; }
+  .section-label { font-size: 8pt; font-weight: bold; color: #6B6A7B; text-transform: uppercase; letter-spacing: 0.8pt; margin-bottom: 4pt; }
+  .section-content { font-size: 9pt; color: #1A1928; line-height: 1.5; }
+  .section-content ul { margin: 0; padding-left: 14pt; }
+  .section-content ul li { margin-bottom: 2pt; }
+  .section-content p { margin: 0; }
+  .ai-badge { display: inline-block; font-size: 7pt; color: #0070AD; margin-left: 4pt; }
+  /* Footer */
+  .doc-footer { text-align: center; font-size: 7.5pt; color: #6B6A7B; padding-top: 6pt; margin-top: 10pt; border-top: 0.5pt solid #D0DEEE; }
+  /* Cover page */
+  .cover { padding: 20pt 0; }
+  .cover h1 { font-size: 20pt; font-weight: bold; color: #12175E; border-bottom: 2pt solid #0070AD; padding-bottom: 8pt; margin-bottom: 8pt; }
+  .cover .supplier { font-size: 14pt; color: #0070AD; font-weight: bold; margin-bottom: 4pt; }
+  .cover .meta-line { font-size: 10pt; color: #6B6A7B; margin-bottom: 3pt; }
+  .cover .count-box { margin-top: 16pt; display: inline-block; background: #F0F5FA; border-left: 3pt solid #0070AD; padding: 8pt 14pt; font-size: 11pt; color: #12175E; font-weight: bold; }
+  .empty-val { color: #6B6A7B; font-style: italic; font-size: 8.5pt; }
+</style>
+</head>
+<body>
+
+<!-- Header (cover page) -->
+<div class="doc-header">
+  <div class="doc-header-logo">
+    <img src="{{ logo_data_uri }}" height="36" style="display:block;">
+  </div>
+  <div class="doc-header-title">Fiches chantiers — {{ supplier.name }}</div>
+</div>
+
+<!-- Cover page -->
+<div class="cover">
+  <div class="supplier">{{ supplier.name }}{% if supplier.sector %} · {{ supplier.sector }}{% endif %}</div>
+  <h1>Fiches chantiers</h1>
+  <div class="meta-line"><strong>Campagne :</strong> {{ campaign.title }}</div>
+  {% if campaign.consultant_name %}<div class="meta-line"><strong>Consultant :</strong> {{ campaign.consultant_name }}</div>{% endif %}
+  <div class="meta-line"><strong>Date :</strong> {{ campaign.created_at.strftime('%d/%m/%Y') if campaign.created_at else '' }}</div>
+  <div class="count-box">{{ entries|length }} initiative{{ 's' if entries|length > 1 else '' }}</div>
+</div>
+
+<div class="doc-footer">Confidentiel — Capgemini Invent</div>
+
+<!-- Chantier sheets -->
+{% for entry in entries %}
+<div class="page-break"></div>
+
+<!-- Page header -->
+<div class="doc-header">
+  <div class="doc-header-logo">
+    <img src="{{ logo_data_uri }}" height="36" style="display:block;">
+  </div>
+  <div class="doc-header-title">Fiche {{ entry.num }} / {{ entries|length }} — {{ supplier.name }}</div>
+</div>
+
+<div class="fiche">
+  <!-- Coloured header -->
+  <div class="fiche-header" style="background: {{ entry.domain_color }};">
+    <table class="fiche-header-table">
+      <tr>
+        <td>
+          <span class="fiche-num">{{ entry.num }}</span>
+          <span class="fiche-label">{{ entry.label }}</span>
+          <div class="fiche-meta">
+            <span class="fiche-badge">{{ entry.phase_label }}</span>
+            {% for code in (entry.domain_codes or []) %}
+              <span class="fiche-badge">{{ code }}</span>
+            {% endfor %}
+            {% if entry.sheet.generated_by_ai %}<span class="fiche-badge">✦ AI</span>{% endif %}
+          </div>
+        </td>
+        <td class="fiche-right" style="width: 110pt;">
+          <span class="fiche-effort-label">Effort</span>
+          <span class="fiche-effort-val">{% if entry.effort == 'faible' %}Low{% elif entry.effort == 'moyen' %}Medium{% elif entry.effort == 'fort' %}High{% else %}{{ entry.effort or '—' }}{% endif %}</span>
+          <br>
+          <span class="fiche-effort-label" style="margin-top:3pt;">Impact</span>
+          <span class="fiche-effort-val">{% if entry.impact == 'faible' %}Low{% elif entry.impact == 'moyen' %}Medium{% elif entry.impact == 'fort' %}High{% else %}{{ entry.impact or '—' }}{% endif %}</span>
+          {% if entry.sheet.duration_hint %}
+          <br>
+          <span class="fiche-effort-label" style="margin-top:3pt;">Duration</span>
+          <span class="fiche-effort-val">{{ entry.sheet.duration_hint }}</span>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Fiche body -->
+  <div class="fiche-body">
+    <table class="sections-table">
+
+      <!-- Objectifs — full width -->
+      <tr>
+        <td colspan="2" class="section-full">
+          <div class="section-label">Objectifs</div>
+          <div class="section-content">
+            {% if entry.sheet.objectives %}
+              <p>{{ entry.sheet.objectives }}</p>
+            {% else %}
+              <span class="empty-val">Non renseigné</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+
+      <!-- Actions clés | Acteurs -->
+      <tr>
+        <td class="section-half">
+          <div class="section-label">Actions clés</div>
+          <div class="section-content">
+            {% if entry.sheet.key_actions and entry.sheet.key_actions|length > 0 %}
+              <ul>{% for action in entry.sheet.key_actions %}<li>{{ action }}</li>{% endfor %}</ul>
+            {% else %}
+              <span class="empty-val">Non renseigné</span>
+            {% endif %}
+          </div>
+        </td>
+        <td class="section-half">
+          <div class="section-label">Acteurs à mobiliser</div>
+          <div class="section-content">
+            {% if entry.sheet.stakeholders and entry.sheet.stakeholders|length > 0 %}
+              <ul>{% for s in entry.sheet.stakeholders %}<li>{{ s }}</li>{% endfor %}</ul>
+            {% else %}
+              <span class="empty-val">Non renseigné</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+
+      <!-- Prérequis | Deliverables -->
+      <tr>
+        <td class="section-half">
+          <div class="section-label">Prérequis</div>
+          <div class="section-content">
+            {% if entry.sheet.prerequisites %}
+              <p>{{ entry.sheet.prerequisites }}</p>
+            {% else %}
+              <span class="empty-val">Non renseigné</span>
+            {% endif %}
+          </div>
+        </td>
+        <td class="section-half">
+          <div class="section-label">Livrables attendus</div>
+          <div class="section-content">
+            {% if entry.sheet.deliverables and entry.sheet.deliverables|length > 0 %}
+              <ul>{% for d in entry.sheet.deliverables %}<li>{{ d }}</li>{% endfor %}</ul>
+            {% else %}
+              <span class="empty-val">Non renseigné</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+
+      <!-- KPIs | Duration -->
+      <tr>
+        <td class="section-half">
+          <div class="section-label">KPIs de succès</div>
+          <div class="section-content">
+            {% if entry.sheet.success_kpis and entry.sheet.success_kpis|length > 0 %}
+              <ul>{% for k in entry.sheet.success_kpis %}<li>{{ k }}</li>{% endfor %}</ul>
+            {% else %}
+              <span class="empty-val">Non renseigné</span>
+            {% endif %}
+          </div>
+        </td>
+        <td class="section-half">
+          <div class="section-label">Durée indicative</div>
+          <div class="section-content">
+            {% if entry.sheet.duration_hint %}
+              <p style="font-size:11pt; font-weight:bold; color:#12175E;">{{ entry.sheet.duration_hint }}</p>
+            {% else %}
+              <span class="empty-val">Non renseigné</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+</div>
+
+<div class="doc-footer">Confidentiel — Capgemini Invent</div>
+{% endfor %}
+
+</body>
+</html>

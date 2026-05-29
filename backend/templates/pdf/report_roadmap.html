@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 2.2cm 2cm 1.8cm 2cm; }
+  body   { font-family: Arial, sans-serif; font-size: 10.5pt; color: #1A1928; line-height: 1.4; margin: 0; }
+  /* Header */
+  .doc-header { display: table; width: 100%; border-bottom: 2pt solid #0070AD; padding-bottom: 8pt; margin-bottom: 12pt; }
+  .doc-header-logo { display: table-cell; vertical-align: middle; width: 180pt; }
+  .doc-header-title { display: table-cell; vertical-align: middle; text-align: right; font-size: 9pt; font-variant: small-caps; letter-spacing: 0.5pt; color: #6B6A7B; }
+  /* Typography */
+  h1     { font-size: 16pt; font-weight: bold; color: #12175E; border-bottom: 1.5pt solid #0070AD; padding-bottom: 5pt; margin-bottom: 4pt; }
+  h2     { font-size: 11pt; font-weight: bold; color: #12175E; margin: 14pt 0 5pt; }
+  h3     { font-size: 9.5pt; font-weight: bold; margin: 0 0 3pt; }
+  .meta  { color: #6B6A7B; font-size: 9pt; margin-bottom: 12pt; }
+  .meta span { margin-right: 14pt; }
+  .comment-box { background: #F0F5FA; border-left: 3pt solid #0070AD; padding: 8pt 10pt; font-size: 10pt; color: #1A1928; margin: 6pt 0 14pt; border-radius: 0 4pt 4pt 0; font-style: italic; }
+  /* Stats */
+  .stats-table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; }
+  .stats-table td { width: 33%; text-align: center; padding: 6pt 8pt; background: #F0F5FA; border: 2pt solid #fff; }
+  .stat-num  { font-size: 16pt; font-weight: bold; color: #12175E; display: block; }
+  .stat-lbl  { font-size: 8pt; color: #6B6A7B; display: block; }
+  /* Spiders */
+  .spiders-table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; }
+  .spiders-table td { text-align: center; vertical-align: top; padding: 0 8pt; }
+  .spider-title { margin: 0 0 2pt; font-size: 8.5pt; font-weight: bold; color: #12175E; }
+  .spider-sub   { font-size: 7.5pt; color: #6B6A7B; }
+  /* Matrix */
+  .matrix-table { width: 100%; border-collapse: collapse; margin: 8pt 0 14pt; }
+  .matrix-table td { width: 50%; vertical-align: top; padding: 4pt; }
+  .quadrant { border: 0.5pt solid #D0DEEE; border-radius: 6pt; overflow: hidden; }
+  .q-header { padding: 4pt 8pt; font-size: 8.5pt; font-weight: bold; }
+  .q-body   { padding: 6pt 8pt; min-height: 40pt; background: #fff; }
+  .chantier-chip { display: inline-block; margin: 1.5pt; padding: 2pt 6pt; border-radius: 10pt; font-size: 7.5pt; font-weight: 500; border: 0.5pt solid; }
+  /* Chantiers by domain */
+  .domain-block { margin-bottom: 10pt; border: 0.5pt solid #D0DEEE; border-radius: 6pt; overflow: hidden; }
+  .domain-header { padding: 5pt 8pt; }
+  .domain-header-table { width: 100%; border-collapse: collapse; }
+  .domain-header-table td { padding: 0; }
+  .domain-title  { font-size: 10pt; font-weight: bold; }
+  .domain-scores { font-size: 8.5pt; color: #6B6A7B; text-align: right; }
+  .item-row      { padding: 4pt 8pt; border-top: 0.5pt solid #D0DEEE; }
+  .item-row-table { width: 100%; border-collapse: collapse; }
+  .item-row-table td { padding: 0; vertical-align: top; }
+  .item-num      { width: 14pt; height: 14pt; border-radius: 50%; font-size: 7pt; font-weight: bold; display: inline-block; text-align: center; line-height: 14pt; color: #fff; }
+  .item-label    { font-size: 9.5pt; font-weight: bold; margin: 0 0 2pt; }
+  .item-desc     { font-size: 8pt; color: #6B6A7B; margin: 0 0 2pt; }
+  .tag           { display: inline-block; padding: 1pt 5pt; border-radius: 3pt; font-size: 7.5pt; font-weight: bold; margin-right: 2pt; }
+  /* Score table */
+  table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin: 5pt 0; }
+  th    { background: #F0F5FA; color: #12175E; padding: 4pt 6pt; text-align: left; border-bottom: 1pt solid #D0DEEE; }
+  td    { padding: 3pt 6pt; border-bottom: 0.5pt solid #D0DEEE; }
+  .score-badge { display: inline-block; padding: 1pt 4pt; border-radius: 2pt; font-size: 7.5pt; font-weight: bold; }
+  .critical { background: #FCEBEB; color: #791F1F; }
+  .weak     { background: #FAEEDA; color: #633806; }
+  .moderate { background: #E6F1FB; color: #0C447C; }
+  .good     { background: #E1F5EE; color: #085041; }
+  .none     { background: #F0F5FA; color: #6B6A7B; }
+  .page-break { page-break-before: always; }
+  /* Footer */
+  .doc-footer { text-align: center; font-size: 7.5pt; color: #6B6A7B; padding-top: 6pt; margin-top: 14pt; border-top: 0.5pt solid #D0DEEE; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="doc-header-logo">
+    <img src="{{ logo_data_uri }}" height="36" style="display:block;">
+  </div>
+  <div class="doc-header-title">Plan de transformation — {{ supplier.name }}</div>
+</div>
+
+<h1>Plan de transformation — {{ supplier.name }}</h1>
+<div class="meta">
+  <span><strong>Campagne :</strong> {{ campaign.title }}</span>
+  {% if campaign.consultant_name %}<span><strong>Consultant :</strong> {{ campaign.consultant_name }}</span>{% endif %}
+  <span><strong>Date :</strong> {{ campaign.created_at.strftime('%d/%m/%Y') if campaign.created_at else '' }}</span>
+</div>
+
+{% if campaign.synthesis_notes %}
+<div class="comment-box">{{ campaign.synthesis_notes }}</div>
+{% endif %}
+
+<table class="stats-table">
+  <tr>
+    <td><span class="stat-num">{{ active_items|length }}</span><span class="stat-lbl">Chantiers</span></td>
+    <td><span class="stat-num">{{ stats.completion_pct }}%</span><span class="stat-lbl">Complétion</span></td>
+    <td><span class="stat-num">{{ campaign.domain_scope|length }}</span><span class="stat-lbl">Domains</span></td>
+  </tr>
+</table>
+
+<!-- Projection de maturité spiders -->
+<h2>Projection de maturité</h2>
+<table class="spiders-table">
+  <tr>
+    <td>
+      <p class="spider-title">Vue globale</p>
+      <span class="spider-sub">As-is vs To-be by domain</span><br><br>
+      {{ radar_svg(spider_global_labels, spider_global_asis, spider_global_tobe, size=220, color_asis="#C2C0B6", color_tobe="#0070AD") }}
+    </td>
+    <td>
+      <p class="spider-title">Vue détaillée</p>
+      <span class="spider-sub">As-is vs To-be by subdomain</span><br><br>
+      {{ radar_svg(spider_sd_labels, spider_sd_asis, spider_sd_tobe, size=220, color_asis="#C2C0B6", color_tobe="#FF6D2E") }}
+    </td>
+  </tr>
+</table>
+
+<!-- Effort / Impact matrix -->
+<h2>Matrice effort / impact</h2>
+<table class="matrix-table">
+  <tr>
+  {% for q in quadrants %}
+  {% if loop.index == 3 %}</tr><tr>{% endif %}
+  <td>
+    <div class="quadrant">
+      <div class="q-header" style="background:{{ q.headerBg }}; color:{{ q.headerColor }}">
+        {{ q.label }} — {{ q.sub }}
+      </div>
+      <div class="q-body">
+        {% for item in q.items %}
+          <span class="chantier-chip" style="background:{{ item.dc_bg }}; border-color:{{ item.dc_border }}; color:{{ item.dc_text }}">
+            <span style="display:inline-block;width:11pt;height:11pt;border-radius:50%;background:{{ item.dc_border }};color:#fff;font-size:6.5pt;font-weight:bold;text-align:center;line-height:11pt;vertical-align:middle;margin-right:2pt;">{{ item.num }}</span>{{ item.label[:40] }}{% if item.label|length > 40 %}…{% endif %}
+          </span>
+        {% else %}
+          <span style="color:#D0DEEE; font-size:8pt">—</span>
+        {% endfor %}
+      </div>
+    </div>
+  </td>
+  {% endfor %}
+  </tr>
+</table>
+
+<!-- Chantiers de transformation by domain -->
+<div class="page-break"></div>
+
+<div class="doc-header">
+  <div class="doc-header-logo">
+    <img src="{{ logo_data_uri }}" height="36" style="display:block;">
+  </div>
+  <div class="doc-header-title">Plan de transformation — {{ supplier.name }}</div>
+</div>
+
+<h2>Chantiers de transformation</h2>
+{% for domain in domains %}
+<div class="domain-block">
+  <div class="domain-header" style="background:{{ domain.dc_bg }}; border-left: 3pt solid {{ domain.dc_border }}">
+    <table class="domain-header-table">
+      <tr>
+        <td><span class="domain-title" style="color:{{ domain.dc_text }}">{{ domain.label }}</span></td>
+        <td class="domain-scores" style="color:{{ domain.dc_text }}">
+          {{ "%.1f"|format(domain.as_is) if domain.as_is else "—" }}/4
+          → {{ "%.1f"|format(domain.tobe) if domain.tobe else "—" }}/4
+          {% if domain.gain > 0.05 %}(+{{ "%.1f"|format(domain.gain) }}){% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% for item in domain.items %}
+  <div class="item-row">
+    <table class="item-row-table">
+      <tr>
+        <td style="width:18pt;padding-right:5pt;">
+          <span class="item-num" style="background:{{ domain.dc_border }}">{{ item.num }}</span>
+        </td>
+        <td>
+          <p class="item-label">{{ item.label }}</p>
+          {% if item.description %}<p class="item-desc">{{ item.description }}</p>{% endif %}
+          <div>
+            {% if item.effort == 'faible' %}
+              <span class="tag" style="background:#EAF3DE;color:#27500A">Effort : faible</span>
+            {% elif item.effort == 'moyen' %}
+              <span class="tag" style="background:#FAEEDA;color:#633806">Effort : moyen</span>
+            {% else %}
+              <span class="tag" style="background:#FCEBEB;color:#791F1F">Effort : fort</span>
+            {% endif %}
+            {% if item.impact == 'faible' %}
+              <span class="tag" style="background:#F0F5FA;color:#6B6A7B">Impact : faible</span>
+            {% elif item.impact == 'moyen' %}
+              <span class="tag" style="background:#F0F5FA;color:#12175E">Impact : moyen</span>
+            {% else %}
+              <span class="tag" style="background:#E1F5EE;color:#085041">Impact : fort</span>
+            {% endif %}
+            {% for ti in item.template_impacts or [] %}
+              <span class="tag" style="background:#F0F5FA;color:#0070AD">{{ ti.subdomain_code }} → {{ ti.maturity_target }}</span>
+            {% endfor %}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+<!-- Maturité détaillée by subdomain -->
+<h2>Maturité détaillée</h2>
+<table>
+  <thead><tr><th>Sous-domaine</th><th>As-is</th><th>To-be</th><th>Gain</th></tr></thead>
+  <tbody>
+  {% for domain in heatmap_rows %}
+    <tr><td colspan="4" style="background:#F0F5FA;font-weight:bold;font-size:8.5pt;color:#12175E">{{ domain.label }}</td></tr>
+    {% for sd in domain.subdomains %}
+    <tr>
+      <td>{{ sd.label }}</td>
+      <td>{% set s = sd.score %}{% if s is not none %}{% if s < 1 %}<span class="score-badge critical">{{ "%.1f"|format(s) }}</span>{% elif s < 2 %}<span class="score-badge weak">{{ "%.1f"|format(s) }}</span>{% elif s < 3 %}<span class="score-badge moderate">{{ "%.1f"|format(s) }}</span>{% else %}<span class="score-badge good">{{ "%.1f"|format(s) }}</span>{% endif %}{% else %}<span class="score-badge none">—</span>{% endif %}</td>
+      <td>{% if sd.tobe is not none %}<span class="score-badge {% if sd.tobe < 1 %}critical{% elif sd.tobe < 2 %}weak{% elif sd.tobe < 3 %}moderate{% else %}good{% endif %}">{{ "%.1f"|format(sd.tobe) }}</span>{% else %}—{% endif %}</td>
+      <td>{% if sd.gain and sd.gain > 0.05 %}<strong style="color:#085041">+{{ "%.1f"|format(sd.gain) }}</strong>{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="doc-footer">Confidentiel — Capgemini Invent</div>
+
+</body>
+</html>

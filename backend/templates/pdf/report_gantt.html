@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4 landscape; margin: 1.5cm 1.5cm 1.5cm 1.5cm; }
+  body { font-family: Arial, sans-serif; font-size: 9pt; color: #1A1928; line-height: 1.3; margin: 0; }
+  /* Header */
+  .doc-header { display: table; width: 100%; border-bottom: 2pt solid #0070AD; padding-bottom: 6pt; margin-bottom: 8pt; }
+  .doc-header-logo { display: table-cell; vertical-align: middle; width: 160pt; }
+  .doc-header-title { display: table-cell; vertical-align: middle; text-align: right; font-size: 8.5pt; font-variant: small-caps; letter-spacing: 0.5pt; color: #6B6A7B; }
+  /* Title */
+  .report-title { font-size: 14pt; font-weight: bold; color: #12175E; margin: 0 0 2pt; }
+  .report-sub { font-size: 9pt; color: #6B6A7B; margin: 0 0 8pt; }
+  /* Legend */
+  .legend-table { border-collapse: collapse; margin-bottom: 8pt; }
+  .legend-table td { padding: 0 8pt 0 0; vertical-align: middle; font-size: 8pt; white-space: nowrap; }
+  .legend-dot { display: inline-block; width: 10pt; height: 10pt; border-radius: 2pt; margin-right: 3pt; vertical-align: middle; }
+  /* Gantt table */
+  .gantt-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  /* Label column */
+  .col-label { width: 170pt; }
+  /* Month column */
+  .col-month { width: 27pt; }
+  /* Year header row */
+  .gantt-year-header { background: #12175E; color: #fff; font-size: 7pt; font-weight: bold; text-align: center; padding: 2pt 0; }
+  .gantt-year-empty { background: #12175E; padding: 2pt 0; }
+  /* Month header row */
+  .gantt-month-header { background: #F0F5FA; color: #6B6A7B; font-size: 7pt; text-align: center; padding: 2pt 1pt; border-right: 0.5pt solid #D0DEEE; }
+  .gantt-label-header { background: #F0F5FA; color: #12175E; font-size: 8pt; font-weight: bold; padding: 3pt 6pt; border-right: 1pt solid #D0DEEE; }
+  /* Phase header row */
+  .phase-header-label { padding: 3pt 6pt; font-size: 7.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5pt; border-right: 1pt solid #D0DEEE; }
+  .phase-header-cell { border-right: 0.5pt solid #D0DEEE; }
+  /* Item rows */
+  .item-label-cell { padding: 2pt 6pt; border-right: 1pt solid #D0DEEE; border-bottom: 0.5pt solid #D0DEEE; vertical-align: middle; }
+  .item-num { display: inline-block; width: 12pt; height: 12pt; border-radius: 50%; font-size: 6.5pt; font-weight: bold; text-align: center; line-height: 12pt; color: #fff; margin-right: 3pt; vertical-align: middle; }
+  .item-label-text { font-size: 8pt; color: #1A1928; vertical-align: middle; }
+  .gantt-cell { border-right: 0.5pt solid #D0DEEE; border-bottom: 0.5pt solid #D0DEEE; padding: 0; height: 16pt; }
+  .gantt-cell-active { border-right: 0.5pt solid rgba(0,0,0,0.1); border-bottom: 0.5pt solid #D0DEEE; padding: 0; height: 16pt; }
+  /* Footer */
+  .doc-footer { text-align: center; font-size: 7pt; color: #6B6A7B; padding-top: 5pt; margin-top: 8pt; border-top: 0.5pt solid #D0DEEE; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="doc-header-logo">
+    <img src="{{ logo_data_uri }}" height="36" style="display:block;">
+  </div>
+  <div class="doc-header-title">Planning Gantt — {{ supplier.name }}</div>
+</div>
+
+<p class="report-title">Planning des chantiers — {{ supplier.name }}</p>
+<p class="report-sub">
+  {{ campaign.title }}{% if campaign.consultant_name %} · {{ campaign.consultant_name }}{% endif %}
+  · {{ campaign.created_at.strftime('%d/%m/%Y') if campaign.created_at else '' }}
+</p>
+
+<!-- Phase legend -->
+<table class="legend-table">
+  <tr>
+    {% for phase in by_phase %}
+    <td>
+      <span class="legend-dot" style="background: {{ phase.bg }}; border: 1pt solid {{ phase.color }};"></span>
+      <span style="color: {{ phase.color }}; font-weight: bold;">{{ phase.label }}</span>
+    </td>
+    {% endfor %}
+  </tr>
+</table>
+
+<!-- Gantt table -->
+<table class="gantt-table">
+  <colgroup>
+    <col class="col-label">
+    {% for m in months %}<col class="col-month">{% endfor %}
+  </colgroup>
+
+  <!-- Year row -->
+  <tr>
+    <td class="gantt-label-header">Chantier</td>
+    {% set ns = namespace(prev_year=None, count=0) %}
+    {% for m in months %}
+      {% if m.year != ns.prev_year %}
+        {% set ns.prev_year = m.year %}
+      {% endif %}
+      {% if loop.first or m.month == 1 %}
+        <td class="gantt-year-header" style="{% if not loop.first %}border-left: 1.5pt solid #0070AD;{% endif %}">{{ m.year }}</td>
+      {% else %}
+        <td class="gantt-year-empty"></td>
+      {% endif %}
+    {% endfor %}
+  </tr>
+
+  <!-- Month row -->
+  <tr>
+    <td></td>
+    {% for m in months %}
+    <td class="gantt-month-header" style="{% if m.month == 1 and not loop.first %}border-left: 1.5pt solid #0070AD;{% endif %}">{{ m.label }}</td>
+    {% endfor %}
+  </tr>
+
+  <!-- Rows by phase -->
+  {% for phase in by_phase %}
+
+  <!-- Phase header -->
+  <tr>
+    <td class="phase-header-label" style="background: {{ phase.bg }}; color: {{ phase.color }};">
+      {{ phase.label }}
+    </td>
+    {% for m in months %}
+    <td class="phase-header-cell" style="background: {{ phase.bg }}; {% if m.month == 1 and not loop.first %}border-left: 1.5pt solid #0070AD;{% endif %}"></td>
+    {% endfor %}
+  </tr>
+
+  <!-- Phase items -->
+  {% for item in phase['items'] %}
+  <tr>
+    <td class="item-label-cell">
+      <span class="item-num" style="background: {{ item.phase_color }};">{{ item.num }}</span>
+      <span class="item-label-text">{{ item.label[:55] }}{% if item.label|length > 55 %}…{% endif %}</span>
+    </td>
+    {% for i in range(months|length) %}
+      {% set cell_val = item.cells[i] if i < item.cells|length else "" %}
+      {% if cell_val == "active" %}
+        <td class="gantt-cell-active" style="background: {{ item.phase_color }}; {% if months[i].month == 1 and i > 0 %}border-left: 1.5pt solid rgba(255,255,255,0.5);{% endif %}"></td>
+      {% else %}
+        <td class="gantt-cell" style="background: #fff; {% if months[i].month == 1 and i > 0 %}border-left: 1.5pt solid #0070AD;{% endif %}"></td>
+      {% endif %}
+    {% endfor %}
+  </tr>
+  {% endfor %}
+
+  {% endfor %}
+
+</table>
+
+<div class="doc-footer">Confidentiel — Capgemini Invent</div>
+
+</body>
+</html>

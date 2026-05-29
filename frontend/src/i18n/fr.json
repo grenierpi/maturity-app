@@ -1,0 +1,89 @@
+{
+  "nav": { "campaigns": "Campagnes", "catalogue": "Catalogue chantiers", "framework": "Framework" },
+  "workflow": { "interview": "Interview", "synthesis": "Synthèse", "projects": "Chantiers", "qualification": "Qualification", "roadmap": "Roadmap", "planning": "Planning", "sheets": "Fiches" },
+  "common": { "loading": "Chargement…", "error": "Erreur", "cancel": "Annuler", "save": "Sauvegarder", "saving": "Sauvegarde…", "saved": "✓ Sauvegardé", "unsaved": "● Non sauvegardé", "close": "Fermer", "previous": "← Précédent", "next": "Suivant →", "generate_ai": "✦ Générer par IA", "generating": "⟳ Génération…", "export_pdf": "Export PDF" },
+  "status": { "DRAFT": "Brouillon", "IN_PROGRESS": "En cours", "COMPLETED": "Terminée", "ARCHIVED": "Archivée" },
+  "phase": { "quick_win": "Quick wins", "court": "Court terme", "moyen": "Moyen terme", "long": "Long terme" },
+  "effort_impact": { "faible": "Faible", "moyen": "Moyen", "fort": "Fort" },
+  "score": { "critical": "Critique", "weak": "Faible", "moderate": "Moyen", "good": "Bon" },
+  "campaigns": {
+    "title": "Campagnes", "new": "+ Nouvelle campagne", "empty": "Aucune campagne",
+    "empty_hint": "Créez votre première campagne pour commencer",
+    "continue_interview": "Continuer l'interview", "synthesis": "Synthèse", "plan": "Plan →",
+    "completion": "Complétion", "criteria": "critères", "to_review": "À revoir",
+    "flagged_criteria": "critères flaggés", "domains": "Domaines", "in_scope": "dans le périmètre",
+    "global_progress": "Progression globale", "by_domain": "Par domaine", "flagged": "flaggés"
+  },
+  "campaign_new": {
+    "title": "Nouvelle campagne", "supplier": "Fournisseur", "existing": "Existant", "new_supplier": "Nouveau",
+    "supplier_name": "Nom du fournisseur", "sector": "Secteur (optionnel)", "select": "— Sélectionner —",
+    "campaign_title": "Titre de la campagne", "title_placeholder": "Ex: Audit maturité mai 2026",
+    "consultant": "Consultant (optionnel)", "consultant_placeholder": "Prénom Nom",
+    "domains_to_audit": "Domaines à auditer", "create": "Créer et démarrer", "creating": "Création…",
+    "supplier_required": "Nom du fournisseur obligatoire", "select_supplier": "Sélectionnez ou créez un fournisseur",
+    "title_required": "Le titre est obligatoire", "domains_required": "Sélectionnez au moins un domaine"
+  },
+  "interview": {
+    "questions": "Questions", "criteria_to_assess": "Critères à vérifier",
+    "comment_placeholder": "Commentaire, observation terrain…",
+    "to_review": "⚐ À revoir", "flagged": "⚑ Flaggé",
+    "question_score": "Score question", "complete": "✓ Complète",
+    "view_synthesis": "Voir la synthèse →", "attachment": "+ Pièce jointe"
+  },
+  "synthesis": {
+    "title": "Synthèse assessment —", "completed": "complété", "flagged": "flaggés",
+    "general_observations": "Observations générales", "global_maturity": "Maturité globale",
+    "domain_view": "Vue par domaine", "detailed_maturity": "Maturité détaillée",
+    "subdomain_view": "Vue par sous-domaine", "consultant_notes": "Notes consultant",
+    "notes_placeholder": "Observations générales, contexte, points saillants de l'entretien…",
+    "weak_points_title": "Détail par sous-domaine — principaux points faibles",
+    "weak_points_hint": "2 critères les plus faibles (score ≤ 2) + critères flaggés par sous-domaine",
+    "completion": "Complétion", "assessed_criteria": "Critères évalués", "audited_domains": "Domaines audités",
+    "in_scope": "périmètre", "no_weak_points": "Aucun point faible identifié", "not_assessed": "Non évalué",
+    "projects_btn": "Chantiers →", "validate_btn": "Valider la synthèse et passer aux chantiers →"
+  },
+  "plan_selection": {
+    "breadcrumb": "Synthèse", "title": "Sélection des chantiers",
+    "subtitle": "Définissez les cibles et sélectionnez les chantiers par sous-domaine",
+    "qualify_btn": "Qualifier →", "subdomains": "Sous-domaines", "click_set_target": "Cliquez · Définissez la cible",
+    "manual": "+ Manuel", "target": "Cible", "maturity_projection": "Projection maturité",
+    "delta_per_domain": "Δ par domaine", "insufficient_maturity": "⚠ Maturité préalable insuffisante",
+    "current_score": "Score actuel :", "compatible": "compatible", "no_projects": "Aucun chantier dans le catalogue pour ce sous-domaine",
+    "select_subdomain": "Sélectionnez un sous-domaine", "selected": "sélectionné",
+    "validate_btn": "Valider et qualifier →", "new_project": "Nouveau chantier",
+    "label": "Label *", "description": "Description", "main_subdomain": "Sous-domaine principal",
+    "target_maturity": "Maturité cible espérée", "create_add": "Créer et ajouter"
+  },
+  "plan_qualification": {
+    "breadcrumb": "Sélection", "title": "Qualification des chantiers",
+    "subtitle": "Ajustez effort, impact et reformulez les chantiers pour le client",
+    "roadmap_btn": "Roadmap →", "to_qualify": "à qualifier",
+    "return_selection": "retourner à la sélection", "rephrase": "Reformuler",
+    "client_label": "Intitulé client", "client_description": "Description client",
+    "apply": "Appliquer les modifications", "excluded": "Chantiers exclus", "restore": "restaurer"
+  },
+  "roadmap": { "export_pdf": "Export PDF" },
+  "gantt": {
+    "title": "Planning des chantiers", "scheduled": "chantiers planifiés",
+    "project": "Chantier", "start": "Début", "duration": "Durée", "clear": "Effacer",
+    "hint": "Survolez un chantier pour modifier le planning · Les phases s'ajustent avec les boutons",
+    "validate_btn": "Valider et rédiger les fiches →", "sheets_btn": "Fiches →"
+  },
+  "sheets": {
+    "breadcrumb": "Planning", "title": "Fiches chantier",
+    "generate_empty": "✦ Générer les {n} fiches vides",
+    "empty_sheet": "Fiche vide", "unsaved": "● Non sauvegardé",
+    "objectives": "Objectifs", "key_actions": "Actions clés", "stakeholders": "Acteurs à mobiliser",
+    "prerequisites": "Prérequis", "deliverables": "Livrables attendus", "kpis": "KPIs de succès",
+    "duration": "Durée indicative",
+    "action_placeholder": "Ajouter une action…", "stakeholder_placeholder": "Ex: Directeur supply chain…",
+    "prereq_placeholder": "Conditions nécessaires avant de lancer le chantier…",
+    "deliverable_placeholder": "Ex: Procédure S&OP documentée…",
+    "kpi_placeholder": "Ex: Taux de service ≥ 95%…", "duration_placeholder": "Ex: 3-6 mois",
+    "save_btn": "✓ Sauvegarder", "save_sheet_btn": "✓ Sauvegarder la fiche",
+    "no_projects": "Aucun chantier", "return_selection": "retourner à la sélection",
+    "sheets_pdf": "Fiches PDF", "full_export": "Export complet", "actions_xls": "Plan d'actions XLS",
+    "phase_quick_win": "Quick win", "phase_court": "Court terme", "phase_moyen": "Moyen terme", "phase_long": "Long terme"
+  },
+  "lock_tooltip": "Terminez l'étape précédente pour continuer"
+}

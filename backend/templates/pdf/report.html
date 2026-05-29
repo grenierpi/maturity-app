@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2.2cm 2cm 1.8cm 2cm;
+    @top-left { content: element(pageHeader); }
+  }
+  body   { font-family: Arial, sans-serif; font-size: 11pt; color: #1A1928; line-height: 1.45; margin: 0; }
+  /* Header */
+  .doc-header { display: table; width: 100%; border-bottom: 2pt solid #0070AD; padding-bottom: 8pt; margin-bottom: 14pt; }
+  .doc-header-logo { display: table-cell; vertical-align: middle; width: 180pt; }
+  .doc-header-title { display: table-cell; vertical-align: middle; text-align: right; font-size: 9pt; font-variant: small-caps; letter-spacing: 0.5pt; color: #6B6A7B; }
+  /* Typography */
+  h1     { font-size: 17pt; font-weight: bold; color: #12175E; border-bottom: 1.5pt solid #0070AD; padding-bottom: 5pt; margin-bottom: 4pt; }
+  h2     { font-size: 12pt; font-weight: bold; color: #12175E; margin: 16pt 0 6pt; }
+  .meta  { color: #6B6A7B; font-size: 9.5pt; margin-bottom: 14pt; }
+  .meta span { margin-right: 16pt; }
+  /* Stats */
+  .stats-table { width: 100%; border-collapse: collapse; margin-bottom: 14pt; }
+  .stats-table td { width: 33%; text-align: center; padding: 7pt 10pt; background: #F0F5FA; border: 2pt solid #fff; border-radius: 0; }
+  .stat-num  { font-size: 18pt; font-weight: bold; color: #12175E; display: block; }
+  .stat-lbl  { font-size: 8pt; color: #6B6A7B; display: block; }
+  /* Spiders */
+  .spiders-table { width: 100%; border-collapse: collapse; margin-bottom: 14pt; }
+  .spiders-table td { text-align: center; vertical-align: top; padding: 0 10pt; }
+  .spider-title { margin: 0 0 3pt; font-size: 9pt; font-weight: bold; color: #12175E; }
+  .spider-sub   { font-size: 8pt; color: #6B6A7B; }
+  /* Table */
+  table      { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 5pt 0 10pt; }
+  th         { background: #F0F5FA; color: #12175E; padding: 5pt 7pt; text-align: left; border-bottom: 1pt solid #D0DEEE; }
+  td         { padding: 4pt 7pt; border-bottom: 0.5pt solid #D0DEEE; vertical-align: top; }
+  /* Badges */
+  .score-badge { display: inline-block; padding: 1pt 5pt; border-radius: 3pt; font-size: 8.5pt; font-weight: bold; }
+  .critical { background: #FCEBEB; color: #791F1F; }
+  .weak     { background: #FAEEDA; color: #633806; }
+  .moderate { background: #E6F1FB; color: #0C447C; }
+  .good     { background: #E1F5EE; color: #085041; }
+  .none     { background: #F0F5FA; color: #6B6A7B; }
+  .weak-point { font-size: 8.5pt; color: #1A1928; margin: 2pt 0; padding: 2pt 6pt; border-left: 2pt solid #FF6D2E; }
+  .weak-flagged { border-color: #FF6D2E; }
+  .notes-box { background: #F0F5FA; border-left: 3pt solid #0070AD; padding: 7pt 10pt; font-size: 9.5pt; margin: 6pt 0 14pt; border-radius: 0 4pt 4pt 0; }
+  .page-break { page-break-before: always; }
+  /* Footer */
+  .doc-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 7.5pt; color: #6B6A7B; padding: 4pt 0; border-top: 0.5pt solid #D0DEEE; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="doc-header-logo">
+    <img src="{{ logo_data_uri }}" height="36" style="display:block;">
+  </div>
+  <div class="doc-header-title">Rapport d'assessment — {{ supplier.name }}</div>
+</div>
+
+<div class="doc-footer">Confidentiel — Capgemini Invent</div>
+
+<h1>Rapport d'assessment — {{ supplier.name }}</h1>
+<div class="meta">
+  <span><strong>Campagne :</strong> {{ campaign.title }}</span>
+  {% if campaign.consultant_name %}<span><strong>Consultant :</strong> {{ campaign.consultant_name }}</span>{% endif %}
+  <span><strong>Date :</strong> {{ campaign.created_at.strftime('%d/%m/%Y') if campaign.created_at else '' }}</span>
+</div>
+
+<table class="stats-table">
+  <tr>
+    <td><span class="stat-num">{{ stats.completion_pct }}%</span><span class="stat-lbl">Complétion</span></td>
+    <td><span class="stat-num">{{ stats.criteria_answered }}</span><span class="stat-lbl">Critères évalués</span></td>
+    <td><span class="stat-num">{{ stats.criteria_flagged }}</span><span class="stat-lbl">Points flaggés</span></td>
+  </tr>
+</table>
+
+{% if campaign.synthesis_notes %}
+<h2>Observations générales</h2>
+<div class="notes-box">{{ campaign.synthesis_notes }}</div>
+{% endif %}
+
+<h2>Maturité par domaine</h2>
+<table class="spiders-table">
+  <tr>
+    <td>
+      <p class="spider-title">Vue globale</p>
+      <span class="spider-sub">Par domaine</span><br><br>
+      {{ radar_svg(spider_domain_labels, spider_domain_scores, size=230, color_asis="#C2C0B6", color_tobe="#0070AD") }}
+    </td>
+    <td>
+      <p class="spider-title">Vue détaillée</p>
+      <span class="spider-sub">Par sous-domaine</span><br><br>
+      {{ radar_svg(spider_sd_labels, spider_sd_scores, size=230, color_asis="#C2C0B6", color_tobe="#0070AD") }}
+    </td>
+  </tr>
+</table>
+
+<table>
+  <thead><tr><th>Domaine</th><th>Score</th><th>Niveau</th></tr></thead>
+  <tbody>
+  {% for d in radar %}
+  <tr>
+    <td><strong>{{ d.domain_label }}</strong></td>
+    <td>{{ "%.1f"|format(d.score) if d.score else "—" }}/4</td>
+    <td>{% if d.score %}{% if d.score < 1 %}<span class="score-badge critical">Critique</span>{% elif d.score < 2 %}<span class="score-badge weak">Faible</span>{% elif d.score < 3 %}<span class="score-badge moderate">Moyen</span>{% else %}<span class="score-badge good">Bon</span>{% endif %}{% else %}<span class="score-badge none">—</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<div class="doc-header">
+  <div class="doc-header-logo">
+    <img src="{{ logo_data_uri }}" height="36" style="display:block;">
+  </div>
+  <div class="doc-header-title">Rapport d'assessment — {{ supplier.name }}</div>
+</div>
+
+<h2>Points faibles identifiés</h2>
+{% if weak_points %}
+<table>
+  <thead><tr><th style="width:22%">Subdomain</th><th style="width:7%">Score</th><th>Points faibles</th></tr></thead>
+  <tbody>
+  {% for wp in weak_points %}
+  <tr>
+    <td><strong>{{ wp.subdomain_label }}</strong><br><small style="color:#6B6A7B">{{ wp.domain_label }}</small></td>
+    <td>{% set s = wp.score %}{% if s is not none %}{% if s < 1 %}<span class="score-badge critical">{{ "%.1f"|format(s) }}</span>{% elif s < 2 %}<span class="score-badge weak">{{ "%.1f"|format(s) }}</span>{% elif s < 3 %}<span class="score-badge moderate">{{ "%.1f"|format(s) }}</span>{% else %}<span class="score-badge good">{{ "%.1f"|format(s) }}</span>{% endif %}{% else %}<span class="score-badge none">—</span>{% endif %}</td>
+    <td>{% if wp.weak_points %}{% for pt in wp.weak_points %}<div class="weak-point {% if pt.flagged %}weak-flagged{% endif %}"><strong>{{ pt.score }}/4</strong>{% if pt.flagged %} ⚑{% endif %} — {{ pt.criterion_text }}{% if pt.comment %}<br><em style="color:#6B6A7B;font-size:8pt">{{ pt.comment }}</em>{% endif %}</div>{% endfor %}{% else %}<span style="color:#6B6A7B;font-size:8pt">Aucun point faible significatif</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+</body>
+</html>
