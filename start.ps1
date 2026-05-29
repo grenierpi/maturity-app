@@ -122,21 +122,14 @@ if (-not (Test-Path $venvActivate)) {
 info "Activating venv..."
 . $venvActivate
 
-# Verify pip is available; if not, download get-pip.py
-& python -m pip --version 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0) {
-    info "pip missing - downloading get-pip.py from bootstrap.pypa.io..."
-    $getPipPath = Join-Path $env:TEMP "get-pip.py"
-    try {
-        Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile $getPipPath -UseBasicParsing
-    } catch {
-        err "Could not download get-pip.py - check your internet connection"
-    }
-    & python $getPipPath
-    Remove-Item $getPipPath -Force -ErrorAction SilentlyContinue
+# Resolve pip: prefer pip3 in venv Scripts, fallback to python -m pip
+$pip3Exe = Join-Path $venvPath "Scripts\pip3.exe"
+if (Test-Path $pip3Exe) {
+    $pipCmd = $pip3Exe
+} else {
     & python -m pip --version 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) { err "pip install failed even with get-pip.py" }
-    ok "pip installed"
+    if ($LASTEXITCODE -ne 0) { err "pip not found in venv (tried pip3.exe and python -m pip)" }
+    $pipCmd = "python -m pip"  # used as scriptblock below
 }
 
 $installedMarker = Join-Path $venvPath ".installed"
@@ -147,7 +140,7 @@ $needsInstall = (-not (Test-Path $installedMarker)) -or
 
 if ($needsInstall) {
     info "Installing Python dependencies..."
-    & python -m pip install -r $requirementsTxt
+    & $pipCmd install -r $requirementsTxt
     if ($LASTEXITCODE -ne 0) { err "pip install failed - check the error above" }
     New-Item -ItemType File -Force -Path $installedMarker | Out-Null
     ok "Python dependencies installed"
