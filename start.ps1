@@ -122,14 +122,29 @@ if (-not (Test-Path $venvActivate)) {
 info "Activating venv..."
 . $venvActivate
 
-# Resolve pip: prefer pip3 in venv Scripts, fallback to python -m pip
-$pip3Exe = Join-Path $venvPath "Scripts\pip3.exe"
-if (Test-Path $pip3Exe) {
-    $pipCmd = $pip3Exe
-} else {
-    & python -m pip --version 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) { err "pip not found in venv (tried pip3.exe and python -m pip)" }
-    $pipCmd = "python -m pip"  # used as scriptblock below
+# Find pip executable in venv (pip3.exe or pip.exe)
+$pipExe = $null
+foreach ($candidate in @("pip3.exe", "pip.exe")) {
+    $p = Join-Path $venvPath "Scripts\$candidate"
+    if (Test-Path $p) { $pipExe = $p; break }
+}
+if (-not $pipExe) { err "No pip executable found in venv Scripts folder" }
+
+# Test if pip module is actually functional
+& $pipExe --version 2>&1 | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    info "pip executable broken (missing pip module) - installing via get-pip.py..."
+    $getPipPath = Join-Path $env:TEMP "get-pip.py"
+    try {
+        Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile $getPipPath -UseBasicParsing -ErrorAction Stop
+    } catch {
+        err "Cannot download get-pip.py - check internet connection: $_"
+    }
+    & python $getPipPath --quiet
+    Remove-Item $getPipPath -Force -ErrorAction SilentlyContinue
+    & $pipExe --version 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) { err "pip still broken after get-pip.py - check your Python installation" }
+    ok "pip installed via get-pip.py"
 }
 
 $installedMarker = Join-Path $venvPath ".installed"
@@ -140,7 +155,7 @@ $needsInstall = (-not (Test-Path $installedMarker)) -or
 
 if ($needsInstall) {
     info "Installing Python dependencies..."
-    & $pipCmd install -r $requirementsTxt
+    & $pipExe install -r $requirementsTxt
     if ($LASTEXITCODE -ne 0) { err "pip install failed - check the error above" }
     New-Item -ItemType File -Force -Path $installedMarker | Out-Null
     ok "Python dependencies installed"
