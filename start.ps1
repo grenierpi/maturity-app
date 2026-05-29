@@ -128,6 +128,14 @@ $needsInstall = (-not (Test-Path $installedMarker)) -or
                 ((Get-Item $requirementsTxt).LastWriteTime -gt (Get-Item $installedMarker).LastWriteTime)
 
 if ($needsInstall) {
+    # Bootstrap pip if missing (happens with some Windows Python installs)
+    & python -m pip --version 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        info "pip not found in venv - bootstrapping..."
+        & python -m ensurepip
+        if ($LASTEXITCODE -ne 0) { err "Cannot bootstrap pip - try reinstalling Python with 'Add pip' option checked" }
+    }
+
     info "Installing Python dependencies..."
     & python -m pip install -r $requirementsTxt
     if ($LASTEXITCODE -ne 0) { err "pip install failed - check the error above" }
