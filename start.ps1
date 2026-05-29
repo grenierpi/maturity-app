@@ -245,12 +245,11 @@ Write-Host ""
 $backendLog  = Join-Path $ROOT "backend.log"
 $frontendLog = Join-Path $ROOT "frontend.log"
 
-# Backend
-$beProc = Start-Process -FilePath (Join-Path $venvPath "Scripts\uvicorn.exe") `
-    -ArgumentList "main:app", "--reload", "--port", "8000", "--log-level", "warning" `
+# Backend (cmd /c merges stdout+stderr into the same log file)
+$uvicorn = Join-Path $venvPath "Scripts\uvicorn.exe"
+$beProc = Start-Process -FilePath "cmd.exe" `
+    -ArgumentList "/c `"$uvicorn`" main:app --reload --port 8000 --log-level warning >> `"$backendLog`" 2>&1" `
     -WorkingDirectory $BACKEND `
-    -RedirectStandardOutput $backendLog `
-    -RedirectStandardError  $backendLog `
     -PassThru -WindowStyle Hidden
 
 Write-Host "  Backend PID: $($beProc.Id)  (logs -> backend.log)"
@@ -269,10 +268,8 @@ ok "Backend ready at http://localhost:8000"
 
 # Frontend
 $feProc = Start-Process -FilePath "cmd.exe" `
-    -ArgumentList "/c npm run dev -- --port 5173" `
+    -ArgumentList "/c npm run dev -- --port 5173 >> `"$frontendLog`" 2>&1" `
     -WorkingDirectory $FRONTEND `
-    -RedirectStandardOutput $frontendLog `
-    -RedirectStandardError  $frontendLog `
     -PassThru -WindowStyle Hidden
 
 Write-Host "  Frontend PID: $($feProc.Id)  (logs -> frontend.log)"
