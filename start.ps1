@@ -130,23 +130,6 @@ foreach ($candidate in @("pip3.exe", "pip.exe")) {
 }
 if (-not $pipExe) { err "No pip executable found in venv Scripts folder" }
 
-# Test if pip module is actually functional
-& $pipExe --version 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0) {
-    info "pip executable broken (missing pip module) - installing via get-pip.py..."
-    $getPipPath = Join-Path $env:TEMP "get-pip.py"
-    try {
-        Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile $getPipPath -UseBasicParsing -ErrorAction Stop
-    } catch {
-        err "Cannot download get-pip.py - check internet connection: $_"
-    }
-    & python $getPipPath --quiet
-    Remove-Item $getPipPath -Force -ErrorAction SilentlyContinue
-    & $pipExe --version 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) { err "pip still broken after get-pip.py - check your Python installation" }
-    ok "pip installed via get-pip.py"
-}
-
 $installedMarker = Join-Path $venvPath ".installed"
 $requirementsTxt = Join-Path $BACKEND "requirements.txt"
 
