@@ -100,6 +100,10 @@ if (-not (Test-Path $venvActivate)) {
 
 info "Activating venv..."
 . $venvActivate
+$pythonExe = (Get-Command python -ErrorAction SilentlyContinue).Source
+if (-not $pythonExe -or $pythonExe -notlike "*venv*") {
+    err "Venv activation failed - python not pointing to venv. Try running: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned"
+}
 
 $installedMarker = Join-Path $venvPath ".installed"
 $requirementsTxt = Join-Path $BACKEND "requirements.txt"
@@ -109,8 +113,10 @@ $needsInstall = (-not (Test-Path $installedMarker)) -or
 
 if ($needsInstall) {
     info "Installing Python dependencies..."
-    & pip install --upgrade pip -q
-    & pip install -r $requirementsTxt -q
+    & pip install --upgrade pip
+    if ($LASTEXITCODE -ne 0) { err "pip upgrade failed" }
+    & pip install -r $requirementsTxt
+    if ($LASTEXITCODE -ne 0) { err "pip install failed - check the error above" }
     New-Item -ItemType File -Force -Path $installedMarker | Out-Null
     ok "Python dependencies installed"
 } else {
