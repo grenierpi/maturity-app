@@ -1,10 +1,10 @@
-# start.ps1 — Install + démarrage de Maturity App (Windows)
-# Usage :
-#   .\start.ps1          → install si nécessaire, puis démarre
-#   .\start.ps1 --reset  → recrée la DB et recharge les données
+# start.ps1 - Install + start Maturity App (Windows)
+# Usage:
+#   .\start.ps1         -> install if needed, then start
+#   .\start.ps1 -reset  -> reset DB and reload data
 #
-# Prérequis Windows : Python 3.9+, Node.js 18+, npm
-# Exécuter en tant qu'admin si l'ExecutionPolicy bloque le script :
+# Prerequisites: Python 3.9+, Node.js 18+, npm
+# If ExecutionPolicy blocks the script:
 #   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 param(
@@ -13,28 +13,23 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$ROOT    = Split-Path -Parent $MyInvocation.MyCommand.Path
-$BACKEND = Join-Path $ROOT "backend"
-$SCRIPTS = Join-Path $BACKEND "scripts"
+$ROOT     = Split-Path -Parent $MyInvocation.MyCommand.Path
+$BACKEND  = Join-Path $ROOT "backend"
+$SCRIPTS  = Join-Path $BACKEND "scripts"
 $FRONTEND = Join-Path $ROOT "frontend"
 
-# ── Couleurs ──────────────────────────────────────────────────────────────────
 function ok   { param($msg) Write-Host "OK  $msg" -ForegroundColor Green }
 function info { param($msg) Write-Host "->  $msg" -ForegroundColor Yellow }
 function err  { param($msg) Write-Host "X   $msg" -ForegroundColor Red; exit 1 }
 
 Write-Host ""
-Write-Host "  ███╗   ███╗ █████╗ ████████╗██╗   ██╗██████╗ ██╗████████╗██╗   ██╗" -ForegroundColor Cyan
-Write-Host "  ████╗ ████║██╔══██╗╚══██╔══╝██║   ██║██╔══██╗██║╚══██╔══╝╚██╗ ██╔╝" -ForegroundColor Cyan
-Write-Host "  ██╔████╔██║███████║   ██║   ██║   ██║██████╔╝██║   ██║    ╚████╔╝ " -ForegroundColor Cyan
-Write-Host "  ██║╚██╔╝██║██╔══██║   ██║   ██║   ██║██╔══██╗██║   ██║     ╚██╔╝  " -ForegroundColor Cyan
-Write-Host "  ██║ ╚═╝ ██║██║  ██║   ██║   ╚██████╔╝██║  ██║██║   ██║      ██║   " -ForegroundColor Cyan
-Write-Host "  ╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝      ╚═╝  " -ForegroundColor Cyan
-Write-Host "                        Maturity App — start.ps1"
+Write-Host "  =====================================================" -ForegroundColor Cyan
+Write-Host "              Maturity App - start.ps1" -ForegroundColor Cyan
+Write-Host "  =====================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# ── Prérequis ─────────────────────────────────────────────────────────────────
-info "Vérification des prérequis..."
+# --- Prerequisites ---
+info "Checking prerequisites..."
 
 $python = $null
 foreach ($cmd in @("python", "python3")) {
@@ -43,39 +38,35 @@ foreach ($cmd in @("python", "python3")) {
         if ($v -match "Python 3") { $python = $cmd; break }
     } catch {}
 }
-if (-not $python) { err "Python 3 non trouvé — installez-le depuis https://www.python.org/downloads/" }
+if (-not $python) { err "Python 3 not found - install from https://www.python.org/downloads/" }
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-    err "Node.js non trouvé — installez-le depuis https://nodejs.org/"
+    err "Node.js not found - install from https://nodejs.org/"
 }
 if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    err "npm non trouvé — réinstallez Node.js depuis https://nodejs.org/"
+    err "npm not found - reinstall Node.js from https://nodejs.org/"
 }
 
 $pyVer   = (& $python --version 2>&1) -replace "Python ", ""
 $nodeVer = (node --version)
-ok "Python $pyVer · Node $nodeVer"
+ok "Python $pyVer / Node $nodeVer"
 
-# ── .env ──────────────────────────────────────────────────────────────────────
+# --- .env ---
 $envFile    = Join-Path $BACKEND ".env"
 $envExample = Join-Path $BACKEND ".env.example"
 
 if (-not (Test-Path $envFile)) {
     if (Test-Path $envExample) {
-        info "Création du fichier .env depuis .env.example..."
+        info "Creating .env from .env.example..."
         Copy-Item $envExample $envFile
     } else {
-        info "Création du fichier .env par défaut..."
-        @"
-ANTHROPIC_API_KEY=sk-ant-your-key-here
-DATABASE_URL=sqlite:///./maturity.db
-UPLOAD_DIR=./uploads
-ENV=development
-"@ | Set-Content $envFile -Encoding UTF8
+        info "Creating default .env..."
+        $defaultEnv = "ANTHROPIC_API_KEY=sk-ant-your-key-here`r`nDATABASE_URL=sqlite:///./maturity.db`r`nUPLOAD_DIR=./uploads`r`nENV=development"
+        [System.IO.File]::WriteAllText($envFile, $defaultEnv, [System.Text.Encoding]::UTF8)
     }
     Write-Host ""
-    Write-Host "  IMPORTANT : renseignez votre ANTHROPIC_API_KEY dans backend\.env" -ForegroundColor Red
-    Write-Host "  Editez le fichier puis relancez .\start.ps1"
+    Write-Host "  IMPORTANT: set your ANTHROPIC_API_KEY in backend\.env" -ForegroundColor Red
+    Write-Host "  Edit the file then run .\start.ps1 again"
     Write-Host ""
     exit 0
 }
@@ -83,31 +74,31 @@ ENV=development
 $envContent = Get-Content $envFile -Raw
 if ($envContent -match "your-key-here") {
     Write-Host ""
-    Write-Host "  ANTHROPIC_API_KEY non configuree dans backend\.env" -ForegroundColor Red
-    Write-Host "  Remplacez 'sk-ant-your-key-here' par votre vraie cle"
-    Write-Host "  puis relancez .\start.ps1"
+    Write-Host "  ANTHROPIC_API_KEY not set in backend\.env" -ForegroundColor Red
+    Write-Host "  Replace 'sk-ant-your-key-here' with your real key"
+    Write-Host "  then run .\start.ps1 again"
     Write-Host ""
     exit 0
 }
-ok ".env configuré"
+ok ".env configured"
 
-# ── Backend — venv ─────────────────────────────────────────────────────────────
+# --- Backend venv ---
 Set-Location $BACKEND
 
-$venvPath    = Join-Path $BACKEND "venv"
+$venvPath     = Join-Path $BACKEND "venv"
 $venvActivate = Join-Path $venvPath "Scripts\Activate.ps1"
 
 if (-not (Test-Path $venvPath)) {
-    info "Création du venv Python..."
+    info "Creating Python venv..."
     & $python -m venv venv
-    ok "venv créé"
+    ok "venv created"
 }
 
 if (-not (Test-Path $venvActivate)) {
-    err "Impossible de trouver le venv (Scripts\Activate.ps1 introuvable)"
+    err "Cannot find venv (Scripts\Activate.ps1 missing)"
 }
 
-info "Activation du venv..."
+info "Activating venv..."
 . $venvActivate
 
 $installedMarker = Join-Path $venvPath ".installed"
@@ -117,94 +108,88 @@ $needsInstall = (-not (Test-Path $installedMarker)) -or
                 ((Get-Item $requirementsTxt).LastWriteTime -gt (Get-Item $installedMarker).LastWriteTime)
 
 if ($needsInstall) {
-    info "Installation des dépendances Python..."
+    info "Installing Python dependencies..."
     & pip install --upgrade pip -q
     & pip install -r $requirementsTxt -q
     New-Item -ItemType File -Force -Path $installedMarker | Out-Null
-    ok "Dépendances Python installées"
+    ok "Python dependencies installed"
 } else {
-    ok "Dépendances Python à jour"
+    ok "Python dependencies up to date"
 }
 
-# ── wkhtmltopdf (export PDF) ──────────────────────────────────────────────────
+# --- wkhtmltopdf (PDF export) ---
 if (-not (Get-Command wkhtmltopdf -ErrorAction SilentlyContinue)) {
-    info "wkhtmltopdf non trouvé — tentative d'installation via winget..."
+    info "wkhtmltopdf not found - trying winget..."
     $winget = Get-Command winget -ErrorAction SilentlyContinue
     if ($winget) {
-        try {
-            winget install --id wkhtmltopdf.wkhtmltopdf -e --silent
-            ok "wkhtmltopdf installé via winget"
-        } catch {
-            Write-Host "  wkhtmltopdf non installé — export PDF indisponible" -ForegroundColor Yellow
-            Write-Host "  Installez-le manuellement : winget install wkhtmltopdf.wkhtmltopdf"
+        winget install --id wkhtmltopdf.wkhtmltopdf -e --silent 2>$null
+        if (Get-Command wkhtmltopdf -ErrorAction SilentlyContinue) {
+            ok "wkhtmltopdf installed via winget"
+        } else {
+            Write-Host "  wkhtmltopdf not installed - PDF export unavailable" -ForegroundColor Yellow
+            Write-Host "  Install manually: winget install wkhtmltopdf.wkhtmltopdf"
         }
     } else {
-        Write-Host "  wkhtmltopdf non installé — export PDF indisponible" -ForegroundColor Yellow
-        Write-Host "  Installez-le manuellement : https://wkhtmltopdf.org/downloads.html"
+        Write-Host "  wkhtmltopdf not installed - PDF export unavailable" -ForegroundColor Yellow
+        Write-Host "  Install manually: https://wkhtmltopdf.org/downloads.html"
     }
 } else {
-    ok "wkhtmltopdf disponible"
+    ok "wkhtmltopdf available"
 }
 
-# ── Base de données ────────────────────────────────────────────────────────────
+# --- Database ---
 $dbFile = Join-Path $BACKEND "maturity.db"
 
 if ($reset -and (Test-Path $dbFile)) {
-    info "Reset de la base de données..."
+    info "Resetting database..."
     Remove-Item $dbFile -Force
-    ok "DB supprimée"
+    ok "DB deleted"
 }
 
 if (-not (Test-Path $dbFile)) {
-    info "Initialisation de la base de données..."
-    & python -c @"
-import sys; sys.path.insert(0, '.')
-from database import Base, engine, init_upload_dir
-Base.metadata.create_all(engine)
-init_upload_dir()
-print('Tables créées')
-"@
-    ok "Base de données initialisée"
+    info "Initialising database..."
+    & python -c "import sys; sys.path.insert(0, '.'); from database import Base, engine, init_upload_dir; Base.metadata.create_all(engine); init_upload_dir(); print('Tables created')"
+    ok "Database initialised"
 
     $env:PYTHONPATH = $BACKEND
-    info "Chargement du framework JIP..."
+    info "Loading JIP framework..."
     & python (Join-Path $SCRIPTS "seed_jip_framework.py")
-    ok "Framework JIP chargé"
+    ok "JIP framework loaded"
 
-    info "Chargement des données de test..."
+    info "Loading test data..."
     & python (Join-Path $SCRIPTS "fake_data.py") --skip-framework
-    ok "Données de test chargées (3 fournisseurs)"
+    ok "Test data loaded (3 suppliers)"
 
-    info "Chargement du catalogue de chantiers JIP..."
+    info "Loading JIP project catalogue..."
     & python (Join-Path $SCRIPTS "seed_jip_templates.py")
-    ok "30 chantiers JIP chargés dans le catalogue"
-    $env:PYTHONPATH = $null
+    ok "30 JIP projects loaded"
+    $env:PYTHONPATH = ""
 } else {
-    ok "Base de données existante conservée"
+    ok "Existing database kept"
 }
 
-# ── Frontend — node_modules ────────────────────────────────────────────────────
+# --- Frontend node_modules ---
 Set-Location $FRONTEND
 
-$nodeModules  = Join-Path $FRONTEND "node_modules"
-$packageJson  = Join-Path $FRONTEND "package.json"
-$lockFile     = Join-Path $FRONTEND "node_modules\.package-lock.json"
+$nodeModules = Join-Path $FRONTEND "node_modules"
+$packageJson = Join-Path $FRONTEND "package.json"
+$lockFile    = Join-Path $FRONTEND "node_modules\.package-lock.json"
 
 $needsNpmInstall = (-not (Test-Path $nodeModules)) -or
                    (-not (Test-Path $lockFile)) -or
                    ((Get-Item $packageJson).LastWriteTime -gt (Get-Item $lockFile -ErrorAction SilentlyContinue).LastWriteTime)
 
 if ($needsNpmInstall) {
-    info "Installation des dépendances npm..."
+    info "Installing npm dependencies..."
     npm install --silent
-    ok "Dépendances npm installées"
+    ok "npm dependencies installed"
 } else {
-    ok "Dépendances npm à jour"
+    ok "npm dependencies up to date"
 }
 
-# ── Libérer les ports 8000 et 5173 ────────────────────────────────────────────
+# --- Free ports 8000 and 5173 ---
 Set-Location $ROOT
-info "Nettoyage des ports 8000 et 5173..."
+info "Freeing ports 8000 and 5173..."
 
 function Stop-Port {
     param([int]$port)
@@ -219,13 +204,13 @@ function Stop-Port {
 Stop-Port 8000
 Stop-Port 5173
 Start-Sleep -Seconds 1
-ok "Ports libérés"
+ok "Ports freed"
 
-# ── Démarrage ─────────────────────────────────────────────────────────────────
+# --- Start servers ---
 Write-Host ""
-Write-Host "  ─────────────────────────────────────────────────────"
-Write-Host "   Démarrage des serveurs..."
-Write-Host "  ─────────────────────────────────────────────────────"
+Write-Host "  ----------------------------------------------------"
+Write-Host "  Starting servers..."
+Write-Host "  ----------------------------------------------------"
 Write-Host ""
 
 $backendLog  = Join-Path $ROOT "backend.log"
@@ -239,9 +224,9 @@ $beProc = Start-Process -FilePath (Join-Path $venvPath "Scripts\uvicorn.exe") `
     -RedirectStandardError  $backendLog `
     -PassThru -WindowStyle Hidden
 
-Write-Host "  Backend PID : $($beProc.Id)  (logs -> backend.log)"
+Write-Host "  Backend PID: $($beProc.Id)  (logs -> backend.log)"
 
-info "Attente du backend..."
+info "Waiting for backend..."
 $ready = $false
 for ($i = 1; $i -le 20; $i++) {
     try {
@@ -249,9 +234,9 @@ for ($i = 1; $i -le 20; $i++) {
         if ($r.StatusCode -eq 200) { $ready = $true; break }
     } catch {}
     Start-Sleep -Seconds 1
-    if ($i -eq 20) { err "Backend non démarré après 20s — vérifiez backend.log" }
+    if ($i -eq 20) { err "Backend not started after 20s - check backend.log" }
 }
-ok "Backend prêt sur http://localhost:8000"
+ok "Backend ready at http://localhost:8000"
 
 # Frontend
 $feProc = Start-Process -FilePath "cmd.exe" `
@@ -261,9 +246,9 @@ $feProc = Start-Process -FilePath "cmd.exe" `
     -RedirectStandardError  $frontendLog `
     -PassThru -WindowStyle Hidden
 
-Write-Host "  Frontend PID : $($feProc.Id)  (logs -> frontend.log)"
+Write-Host "  Frontend PID: $($feProc.Id)  (logs -> frontend.log)"
 
-info "Attente du frontend..."
+info "Waiting for frontend..."
 $ready = $false
 for ($i = 1; $i -le 25; $i++) {
     try {
@@ -271,42 +256,42 @@ for ($i = 1; $i -le 25; $i++) {
         if ($r.StatusCode -eq 200) { $ready = $true; break }
     } catch {}
     Start-Sleep -Seconds 1
-    if ($i -eq 25) { err "Frontend non démarré après 25s — vérifiez frontend.log" }
+    if ($i -eq 25) { err "Frontend not started after 25s - check frontend.log" }
 }
-ok "Frontend prêt sur http://localhost:5173"
+ok "Frontend ready at http://localhost:5173"
 
-# ── Résumé ────────────────────────────────────────────────────────────────────
+# --- Summary ---
 Write-Host ""
-Write-Host "  ─────────────────────────────────────────────────────"
-Write-Host "  OK  Maturity App démarrée" -ForegroundColor Green
-Write-Host "  ─────────────────────────────────────────────────────"
+Write-Host "  ----------------------------------------------------"
+Write-Host "  OK  Maturity App started" -ForegroundColor Green
+Write-Host "  ----------------------------------------------------"
 Write-Host ""
-Write-Host "   App       ->  http://localhost:5173"
-Write-Host "   API docs  ->  http://localhost:8000/docs"
+Write-Host "   App      ->  http://localhost:5173"
+Write-Host "   API docs ->  http://localhost:8000/docs"
 Write-Host ""
-Write-Host "   Logs BE   ->  Get-Content backend.log -Wait"
-Write-Host "   Logs FE   ->  Get-Content frontend.log -Wait"
+Write-Host "   Logs BE  ->  Get-Content backend.log -Wait"
+Write-Host "   Logs FE  ->  Get-Content frontend.log -Wait"
 Write-Host ""
-Write-Host "   Arreter   ->  Stop-Process -Id $($beProc.Id),$($feProc.Id)"
-Write-Host "               (ou fermer cette fenetre)"
+Write-Host "   Stop     ->  Stop-Process -Id $($beProc.Id),$($feProc.Id)"
+Write-Host "              (or close this window)"
 Write-Host ""
-Write-Host "   Options   ->  .\start.ps1 -reset  (recrée la DB)"
-Write-Host "  ─────────────────────────────────────────────────────"
+Write-Host "   Options  ->  .\start.ps1 -reset  (recreate DB)"
+Write-Host "  ----------------------------------------------------"
 Write-Host ""
 
-# Garder le script actif pour capturer Ctrl+C
+# Keep script alive to catch Ctrl+C
 try {
-    Write-Host "Appuyez sur Ctrl+C pour arrêter les serveurs..." -ForegroundColor Yellow
+    Write-Host "Press Ctrl+C to stop servers..." -ForegroundColor Yellow
     while ($true) {
         Start-Sleep -Seconds 5
         if ($beProc.HasExited -or $feProc.HasExited) {
-            Write-Host "Un serveur s'est arrêté inopinément — vérifiez les logs." -ForegroundColor Red
+            Write-Host "A server stopped unexpectedly - check the logs." -ForegroundColor Red
             break
         }
     }
 } finally {
-    info "Arrêt des serveurs..."
+    info "Stopping servers..."
     Stop-Process -Id $beProc.Id -Force -ErrorAction SilentlyContinue
     Stop-Process -Id $feProc.Id -Force -ErrorAction SilentlyContinue
-    ok "Serveurs arrêtés"
+    ok "Servers stopped"
 }
