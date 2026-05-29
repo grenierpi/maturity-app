@@ -122,15 +122,21 @@ if (-not (Test-Path $venvActivate)) {
 info "Activating venv..."
 . $venvActivate
 
-# Verify pip is available; if not, recreate the venv
+# Verify pip is available; if not, download get-pip.py
 & python -m pip --version 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
-    info "pip missing from venv - recreating..."
-    New-Venv
-    . $venvActivate
+    info "pip missing - downloading get-pip.py from bootstrap.pypa.io..."
+    $getPipPath = Join-Path $env:TEMP "get-pip.py"
+    try {
+        Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile $getPipPath -UseBasicParsing
+    } catch {
+        err "Could not download get-pip.py - check your internet connection"
+    }
+    & python $getPipPath
+    Remove-Item $getPipPath -Force -ErrorAction SilentlyContinue
     & python -m pip --version 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) { err "pip still missing after venv recreate - check your Python installation" }
-    ok "pip available"
+    if ($LASTEXITCODE -ne 0) { err "pip install failed even with get-pip.py" }
+    ok "pip installed"
 }
 
 $installedMarker = Join-Path $venvPath ".installed"
